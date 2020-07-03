@@ -1,0 +1,14 @@
+[package]
+name = "pfly_open_xplane"
+version = "0.1.0"
+authors = ["Skye Viau <skye.viau@outlook.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+xplm = "0.3.1"
+pfly_rust = { path = "../pfly_rust" }
+socket2 = "0.3.12"
+
+[lib]
+crate-type = ["cdylib"]
