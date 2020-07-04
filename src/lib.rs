@@ -50,8 +50,6 @@ impl Plugin for pFlyPlugin {
             println!("Getting X-Plane data...");
             println!("{:?}", fuel.get());
             println!("{:?}", fuel.get() as i32);
-            println!("{:?}", gForce.get() * 1000.0);
-            println!("{:?}", (gForce.get() * 1000.0) as i32);
 
             let mut ias_comp = 0.0;
             if ias.get() > 0.0 {
