@@ -44,23 +44,33 @@ impl Plugin for pFlyPlugin {
         let isSlew: DataRef<bool, ReadOnly> = DataRef::find("sim/operation/prefs/replay_mode")?;
         let isPaused: DataRef<bool, ReadOnly> = DataRef::find("sim/time/paused")?;
         let fps: DataRef<f32, ReadOnly> = DataRef::find("sim/time/gpu_time_per_frame_sec_approx")?;
-        let fuel: DataRef<f32, ReadOnly> = DataRef::find("sim/aircraft/weight/acf_m_fuel_tot")?;
+        let fuel: DataRef<f32, ReadOnly> = DataRef::find("sim/flightmodel/weight/m_fuel_total")?;
 
         let mut loop_handler =  FlightLoop::new(move |loop_state: &mut LoopState| {
             println!("Getting X-Plane data...");
+            println!("{:?}", fuel.get());
+            println!("{:?}", fuel.get() as i32);
+            println!("{:?}", gForce.get() * 1000.0);
+            println!("{:?}", (gForce.get() * 1000.0) as i32);
+
+            let mut ias_comp = 0.0;
+            if ias.get() > 0.0 {
+                ias_comp = ias.get();
+            }
+
             if send_message(pfly_socket.try_clone().unwrap(), PflyIpcData{
                 altitude: (altitude.get() * 3.2808399) as i32,
                 agl: agl.get() as i32,
                 groundspeed: (groundspeed.get() * 1.943844) as i32,
-                ias: ias.get() as i32,
+                ias: ias_comp as i32,
                 headingTrue: headingTrue.get() as i32,
                 headingMagnetic: headingMagnetic.get() as i32,
                 latitude: latitude.get(),
                 longitude: longitude.get(),
                 verticalSpeed: verticalSpeed.get() as i32,
                 landingVerticalSpeed: 0,
-                gForce: gForce.get() as i32,
-                fuel: (fuel.get() /  2.20462262) as i32,
+                gForce: (gForce.get() * 1000.0) as i32,
+                fuel: fuel.get() as i32,
                 transponder: transponder.get(),
                 bridgeType: 3,
                 isOnGround: isOnGround.get(),
