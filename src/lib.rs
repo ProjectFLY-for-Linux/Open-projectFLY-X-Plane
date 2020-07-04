@@ -44,10 +44,10 @@ impl Plugin for pFlyPlugin {
         let isSlew: DataRef<bool, ReadOnly> = DataRef::find("sim/operation/prefs/replay_mode")?;
         let isPaused: DataRef<bool, ReadOnly> = DataRef::find("sim/time/paused")?;
         let fps: DataRef<f32, ReadOnly> = DataRef::find("sim/time/gpu_time_per_frame_sec_approx")?;
+        let fuel: DataRef<f32, ReadOnly> = DataRef::find("sim/aircraft/weight/acf_m_fuel_tot")?;
 
         let mut loop_handler =  FlightLoop::new(move |loop_state: &mut LoopState| {
-            println!("Flight loop callback running");
-            println!("lat: {}", latitude.get());
+            println!("Getting X-Plane data...");
             if send_message(pfly_socket.try_clone().unwrap(), PflyIpcData{
                 altitude: (altitude.get() * 3.2808399) as i32,
                 agl: agl.get() as i32,
@@ -60,7 +60,7 @@ impl Plugin for pFlyPlugin {
                 verticalSpeed: verticalSpeed.get() as i32,
                 landingVerticalSpeed: 0,
                 gForce: gForce.get() as i32,
-                fuel: 0,
+                fuel: (fuel.get() /  2.20462262) as i32,
                 transponder: transponder.get(),
                 bridgeType: 3,
                 isOnGround: isOnGround.get(),
@@ -72,7 +72,9 @@ impl Plugin for pFlyPlugin {
                 fps: fps.get() as i32,
                 aircraftType: ""
             }){
-                println!("Sent to projectFly")
+                println!("Sent to projectFLY")
+            } else {
+                println!("Failed to send data to projectFLY")
             }
         });
         loop_handler.schedule_after(Duration::from_millis(1000));
